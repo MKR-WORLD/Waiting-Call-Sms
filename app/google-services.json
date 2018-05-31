@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "613227915810",
+    "firebase_url": "https://waiting-call-sms.firebaseio.com",
+    "project_id": "waiting-call-sms",
+    "storage_bucket": "waiting-call-sms.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613227915810:android:a2837b84a6dbb30a",
+        "android_client_info": {
+          "package_name": "com.mkrworld.waitingcallsms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613227915810-cftbnn360pfmpoemm7avp2jk361vdp6g.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "613227915810-cftbnn360pfmpoemm7avp2jk361vdp6g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTvFNdQKuBRz3O-CM2Pzq8j4uQBs2qVOI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
