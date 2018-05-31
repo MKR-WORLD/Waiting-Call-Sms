@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <com.mkrworld.androidlib.ui.view.CircularImageView
+        android:layout_width="@dimen/dialog_progress_circle_dim"
+        android:layout_height="@dimen/dialog_progress_circle_dim"
+        android:layout_centerInParent="true"
+        android:background="@color/transparent"
+        app:progress_color="@color/colorAccent"
+        app:progress_image="@mipmap/ic_launcher"
+        app:progress_width="@dimen/dialog_progress_progress_width" />
+</RelativeLayout>
