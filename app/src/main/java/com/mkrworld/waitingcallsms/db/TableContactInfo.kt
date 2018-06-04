@@ -175,6 +175,17 @@ class TableContactInfo {
      */
     class ContactInfo {
 
+        companion object {
+            /**
+             * Method to get the Number in the International Format
+             * @param nationalNumber
+             * @param countryCode
+             */
+            fun getContactNumber(nationalNumber: String, countryCode: String): String {
+                return "+$countryCode$nationalNumber"
+            }
+        }
+
         /**
          * Contact Number To be blocked
          */

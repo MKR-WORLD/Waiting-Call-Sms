@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.mkrworld.androidlib.controller.AppPermissionController
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES.M
@@ -16,7 +17,12 @@ import com.mkrworld.waitingcallsms.utils.Tracer
 import android.database.Cursor
 import android.net.Uri
 import android.telephony.PhoneNumberUtils
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import com.mkrworld.waitingcallsms.db.DataBase
+import java.util.*
+import android.content.Context.TELEPHONY_SERVICE
+import android.telephony.TelephonyManager
 
 
 class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissionControllerListener {
@@ -98,10 +104,13 @@ class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissio
                     if (cursorNumber == null || cursorNumber.count == 0) {
                         return
                     }
+                    val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
+                    val curLocale: String = (getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).networkCountryIso.toUpperCase()
                     while (cursorNumber?.moveToNext()) {
                         var phoneNumber: String = cursorNumber?.getString(cursorNumber.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)) ?: ""
-                        Tracer.debug(TAG, "Original ph: $phoneNumber")
-                        Tracer.debug(TAG, "STRIPSEP ph: ${PhoneNumberUtils.stripSeparators(phoneNumber)}")
+                        val parse: Phonenumber.PhoneNumber = phoneNumberUtil.parse(phoneNumber, curLocale)
+                        Tracer.debug(TAG, "NATONAL  Ph: ${parse.nationalNumber}")
+                        Tracer.debug(TAG, "C.C      Ph: ${parse.countryCode}")
                     }
                 }
             }
