@@ -187,7 +187,7 @@ class TableContactInfo {
         }
 
         /**
-         * Contact Number To be blocked
+         * Contact Number To be blocked, Ex : INDIA - +91XXXXXXXX
          */
         var number: String = ""
             get() {
