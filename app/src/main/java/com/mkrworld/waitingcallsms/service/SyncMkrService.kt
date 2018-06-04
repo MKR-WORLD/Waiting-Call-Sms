@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import com.mkrworld.waitingcallsms.BuildConfig
 import com.mkrworld.waitingcallsms.service.SyncMkrAdapter
+import com.mkrworld.waitingcallsms.utils.Tracer
 
 /**
  * Created by mkr on 10/4/18.
@@ -13,11 +14,11 @@ import com.mkrworld.waitingcallsms.service.SyncMkrAdapter
 class SyncMkrService : Service {
 
     companion object {
-        val TAG : String = BuildConfig.BASE_TAG + ".SyncMkrService"
+        val TAG: String = BuildConfig.BASE_TAG + ".SyncMkrService"
     }
 
-    private var mSyncMkrAdapter : SyncMkrAdapter? = null
-    private var mLock : Any = Any()
+    private var mSyncMkrAdapter: SyncMkrAdapter? = null
+    private var mLock: Any = Any()
 
     constructor() : super() {
 
@@ -25,6 +26,7 @@ class SyncMkrService : Service {
 
     override fun onCreate() {
         super.onCreate()
+        Tracer.debug(TAG, "onCreate: ")
         /*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable
@@ -38,7 +40,8 @@ class SyncMkrService : Service {
 
     }
 
-    override fun onBind(p0 : Intent?) : IBinder {
+    override fun onBind(p0: Intent?): IBinder {
+        Tracer.debug(TAG, "onBind: ")
         return mSyncMkrAdapter?.syncAdapterBinder ?: Binder()
     }
 

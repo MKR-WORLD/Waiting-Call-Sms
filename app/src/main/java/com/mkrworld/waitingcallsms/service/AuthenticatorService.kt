@@ -9,15 +9,15 @@ import android.os.IBinder
  */
 class AuthenticatorService : Service() {
 
-    private var mAuthenticator : Authenticator? = null
+    private var mAuthenticator: Authenticator? = null
 
     override fun onCreate() {
         super.onCreate()
         mAuthenticator = Authenticator(this);
     }
 
-    override fun onBind(p0 : Intent?) : IBinder {
-        return mAuthenticator !!.getIBinder();
+    override fun onBind(p0: Intent?): IBinder {
+        return mAuthenticator!!.getIBinder();
     }
 
 }

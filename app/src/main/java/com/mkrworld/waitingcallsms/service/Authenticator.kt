@@ -13,38 +13,38 @@ import com.mkrworld.waitingcallsms.BuildConfig
 class Authenticator : AbstractAccountAuthenticator {
 
     companion object {
-        val TAG : String = BuildConfig.BASE_TAG + ".Authenticator"
+        val TAG: String = BuildConfig.BASE_TAG + ".Authenticator"
     }
 
-    constructor(context : Context) : super(context) {
+    constructor(context: Context) : super(context) {
 
     }
 
-    override fun getAuthTokenLabel(p0 : String?) : String {
+    override fun getAuthTokenLabel(p0: String?): String {
         throw UnsupportedOperationException()
     }
 
-    override fun confirmCredentials(p0 : AccountAuthenticatorResponse?, p1 : Account?, p2 : Bundle?) : Bundle? {
+    override fun confirmCredentials(p0: AccountAuthenticatorResponse?, p1: Account?, p2: Bundle?): Bundle? {
         return null
     }
 
-    override fun updateCredentials(p0 : AccountAuthenticatorResponse?, p1 : Account?, p2 : String?, p3 : Bundle?) : Bundle {
+    override fun updateCredentials(p0: AccountAuthenticatorResponse?, p1: Account?, p2: String?, p3: Bundle?): Bundle {
         throw UnsupportedOperationException()
     }
 
-    override fun getAuthToken(p0 : AccountAuthenticatorResponse?, p1 : Account?, p2 : String?, p3 : Bundle?) : Bundle {
+    override fun getAuthToken(p0: AccountAuthenticatorResponse?, p1: Account?, p2: String?, p3: Bundle?): Bundle {
         throw UnsupportedOperationException()
     }
 
-    override fun hasFeatures(p0 : AccountAuthenticatorResponse?, p1 : Account?, p2 : Array<out String>?) : Bundle {
+    override fun hasFeatures(p0: AccountAuthenticatorResponse?, p1: Account?, p2: Array<out String>?): Bundle {
         throw UnsupportedOperationException()
     }
 
-    override fun editProperties(p0 : AccountAuthenticatorResponse?, p1 : String?) : Bundle {
+    override fun editProperties(p0: AccountAuthenticatorResponse?, p1: String?): Bundle {
         throw UnsupportedOperationException()
     }
 
-    override fun addAccount(p0 : AccountAuthenticatorResponse?, p1 : String?, p2 : String?, p3 : Array<out String>?, p4 : Bundle?) : Bundle? {
+    override fun addAccount(p0: AccountAuthenticatorResponse?, p1: String?, p2: String?, p3: Array<out String>?, p4: Bundle?): Bundle? {
         return null
     }
 }

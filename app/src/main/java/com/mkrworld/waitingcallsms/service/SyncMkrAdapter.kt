@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.content.*
 import android.os.Bundle
 import com.mkrworld.waitingcallsms.BuildConfig
+import com.mkrworld.waitingcallsms.utils.Tracer
 
 
 /**
@@ -17,12 +18,13 @@ class SyncMkrAdapter : AbstractThreadedSyncAdapter {
 
     var mContentResolver: ContentResolver? = null
 
-
     constructor(context: Context, autoInitialize: Boolean) : super(context, autoInitialize) {
+        Tracer.debug(TAG, "Constructor-2: ")
         init()
     }
 
     constructor(context: Context, autoInitialize: Boolean, allowParallelSyncs: Boolean) : super(context, autoInitialize, allowParallelSyncs) {
+        Tracer.debug(TAG, "Constructor-3: ")
         init()
     }
 
@@ -35,7 +37,8 @@ class SyncMkrAdapter : AbstractThreadedSyncAdapter {
      * @param syncResult  A SyncResult object that you use to send information to the sync adapter framework.
      */
     override fun onPerformSync(account: Account?, bundle: Bundle?, authority: String?, contentProvider: ContentProviderClient?, syncResult: SyncResult?) {
-        // DO THE USER OPERATION
+        Tracer.debug(TAG, "onPerformSync: ")
+        context.applicationContext.startService(Intent(context.applicationContext, CallListenerService::class.java))
     }
 
     /**
