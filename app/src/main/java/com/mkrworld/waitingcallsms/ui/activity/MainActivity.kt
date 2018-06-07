@@ -1,34 +1,31 @@
 package com.mkrworld.waitingcallsms.ui.activity
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import com.mkrworld.androidlib.controller.AppPermissionController
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Build.VERSION_CODES.M
-import android.provider.ContactsContract
-import android.provider.Settings
-import com.mkrworld.waitingcallsms.BuildConfig
-import com.mkrworld.waitingcallsms.R
-import com.mkrworld.waitingcallsms.service.CallListenerService
-import com.mkrworld.waitingcallsms.utils.Tracer
 import android.database.Cursor
 import android.net.Uri
-import android.telephony.PhoneNumberUtils
+import android.os.Build
+import android.os.Build.VERSION_CODES.M
+import android.os.Bundle
+import android.provider.ContactsContract
+import android.provider.Settings
+import android.support.v7.app.AppCompatActivity
+import android.telephony.TelephonyManager
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
+import com.mkrworld.androidlib.controller.AppPermissionController
+import com.mkrworld.waitingcallsms.BuildConfig
+import com.mkrworld.waitingcallsms.R
 import com.mkrworld.waitingcallsms.db.DataBase
-import java.util.*
-import android.content.Context.TELEPHONY_SERVICE
-import android.telephony.TelephonyManager
+import com.mkrworld.waitingcallsms.service.CallListenerService
+import com.mkrworld.waitingcallsms.utils.Tracer
 
 
 class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissionControllerListener {
 
     companion object {
-        private val TAG: String = BuildConfig.BASE_TAG + ".MainActivity"
+        private const val TAG : String =  BuildConfig.BASE_TAG + ".MainActivity"
     }
 
     private var appPermissionController: AppPermissionController? = null
