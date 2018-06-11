@@ -1,8 +1,6 @@
 package com.mkrworld.waitingcallsms.db
 
-import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.mkrworld.waitingcallsms.BuildConfig
@@ -58,14 +56,25 @@ class DataBase : SQLiteOpenHelper {
     }
 
     /**
+     * Method to get the Info of the Number
+     * @param countryCode
+     * @param number
+     * @return ContactInfo
+     */
+    fun getContactInfo(countryCode: String, number: String): TableContactInfo.ContactInfo? {
+        Tracer.debug(TAG, "getContactInfo()")
+        return tableConatctInfo?.getContactInfo(readableDatabase, countryCode, number)
+    }
+
+    /**
      * Method to check weather the table contain the number in block list or not
-     *
+     * @param countryCode
      * @param number
      * @return TRUE if contain, else FALSE
      */
-    fun isContainNumber(number: String): Boolean {
+    fun isContainNumber(countryCode: String, number: String): Boolean {
         Tracer.debug(TAG, "isContainNumber()")
-        return tableConatctInfo?.isContainNumber(readableDatabase, number)
+        return tableConatctInfo?.isContainNumber(readableDatabase, countryCode, number)
     }
 
     /**

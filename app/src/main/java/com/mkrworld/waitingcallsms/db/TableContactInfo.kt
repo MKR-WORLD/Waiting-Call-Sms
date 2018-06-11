@@ -3,7 +3,6 @@ package com.mkrworld.waitingcallsms.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteCursor
 import android.database.sqlite.SQLiteDatabase
 import com.mkrworld.waitingcallsms.BuildConfig
 import com.mkrworld.waitingcallsms.utils.Tracer
@@ -14,8 +13,10 @@ class TableContactInfo {
         private var instance: TableContactInfo? = null
         private var context: Context? = null
         private val TABLE_NAME = "Table_Contact_Info"
-        private val COLLUMN_CONTACT_NUMBER: String = "contact_number"
-        private val COLLUMN_CONTACT_NAME: String = "contact_name"
+        private val COL_ID: String = "id"
+        private val COL_COUNTRY_CODE: String = "country_code"
+        private val COL_NUMBER: String = "number"
+        private val COL_NAME: String = "name"
 
         /**
          * Method to get the instance.
@@ -67,28 +68,40 @@ class TableContactInfo {
      * @param number
      * @return TRUE if contain, else FALSE
      */
-    internal fun isContainNumber(database: SQLiteDatabase, number: String): Boolean {
-        Tracer.debug(TAG, "isContainNumber()")
+    internal fun getContactInfo(database: SQLiteDatabase, countryCode: String, number: String): ContactInfo? {
+        Tracer.debug(TAG, "getContactInfo()")
         try {
-            val conditionSelect1 = "($COLLUMN_CONTACT_NUMBER=\"${number.trim()}\")"
-            val query = "Select * from $TABLE_NAME where $conditionSelect1;"
+            val conditionSelect1 = "($COL_COUNTRY_CODE=\"${countryCode.trim()}\")"
+            val conditionSelect2 = "($COL_NUMBER=\"${number.trim()}\")"
+            val query = "Select * from $TABLE_NAME where $conditionSelect1 AND $conditionSelect2;"
             val cursor: Cursor? = database.rawQuery(query, null)
             if (cursor != null) {
-                return if (cursor.count > 0) {
-                    cursor.close()
-                    true
+                return if (cursor.moveToFirst()) {
+                    getContactInfo(cursor, true)
                 } else {
                     cursor.close()
-                    false
+                    return null
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Tracer.error(TAG, "isContainNumber() " + e.message)
+            Tracer.error(TAG, "getContactInfo() " + e.message)
         }
-        return false
+        return null
     }
 
+    /**
+     * Method to check weather the table contain the number in block list or not
+     *
+     * @param database
+     * @param number
+     * @return TRUE if contain, else FALSE
+     */
+    internal fun isContainNumber(database: SQLiteDatabase, countryCode: String, number: String): Boolean {
+        Tracer.debug(TAG, "isContainNumber()")
+        return getContactInfo(database, countryCode, number) != null
+
+    }
 
     /**
      * Method to get the ContactInfo from cursor
@@ -101,8 +114,10 @@ class TableContactInfo {
         Tracer.debug(TAG, "getContactInfo: ")
         return try {
             val dto = ContactInfo()
-            dto.number = cursor?.getString(cursor.getColumnIndex(COLLUMN_CONTACT_NUMBER))
-            dto.name = cursor?.getString(cursor.getColumnIndex(COLLUMN_CONTACT_NAME))
+            dto.id = cursor?.getLong(cursor.getColumnIndex(COL_ID))
+            dto.countryCode = cursor?.getString(cursor.getColumnIndex(COL_COUNTRY_CODE))
+            dto.number = cursor?.getString(cursor.getColumnIndex(COL_NUMBER))
+            dto.name = cursor?.getString(cursor.getColumnIndex(COL_NAME))
             dto
         } catch (e: Exception) {
             e.printStackTrace()
@@ -125,8 +140,13 @@ class TableContactInfo {
         Tracer.debug(TAG, "saveContactInfo() ")
         try {
             val contentValues = ContentValues()
-            contentValues.put(COLLUMN_CONTACT_NUMBER, contactInfo.number)
-            contentValues.put(COLLUMN_CONTACT_NAME, contactInfo.name)
+            val contactInfoOld = getContactInfo(database, contactInfo.countryCode, contactInfo.number)
+            if (contactInfoOld != null) {
+                contentValues.put(COL_ID, contactInfoOld.id)
+            }
+            contentValues.put(COL_COUNTRY_CODE, contactInfo.countryCode)
+            contentValues.put(COL_NUMBER, contactInfo.number)
+            contentValues.put(COL_NAME, contactInfo.name)
             database.replace(TABLE_NAME, null, contentValues)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -143,7 +163,7 @@ class TableContactInfo {
     internal fun removeContactInfo(database: SQLiteDatabase, contactInfo: ContactInfo) {
         Tracer.debug(TAG, "removeContactInfo: ")
         try {
-            database.delete(TABLE_NAME, "$COLLUMN_CONTACT_NUMBER = ?", arrayOf(contactInfo.number))
+            database.delete(TABLE_NAME, "$COL_COUNTRY_CODE = ? AND $COL_NUMBER = ?", arrayOf(contactInfo.countryCode, contactInfo.number))
         } catch (e: Exception) {
             Tracer.error(TAG, "removeGestureData: " + e.message);
         }
@@ -158,8 +178,10 @@ class TableContactInfo {
         Tracer.debug(TAG, "createTable() ")
         try {
             var query = "Create table $TABLE_NAME("
-            query += "$COLLUMN_CONTACT_NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, "
-            query += "$COLLUMN_CONTACT_NAME VARCHAR UNIQUE NOT NULL"
+            query += "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+            query += "$COL_COUNTRY_CODE VARCHAR NOT NULL, "
+            query += "$COL_NUMBER VARCHAR NOT NULL, "
+            query += "$COL_NAME VARCHAR NOT NULL"
             query += ")"
             Tracer.error(TAG, "createTable(QUERY) $query")
             db.execSQL(query)
@@ -175,19 +197,38 @@ class TableContactInfo {
      */
     class ContactInfo {
 
-        companion object {
-            /**
-             * Method to get the Number in the International Format
-             * @param nationalNumber
-             * @param countryCode
-             */
-            fun getContactNumber(nationalNumber: String, countryCode: String): String {
-                return "+$countryCode$nationalNumber"
+        /**
+         * Contact DB Row ID
+         */
+        var id: Long = -1L
+            get() {
+                return field ?: -1
             }
-        }
+            set(value) {
+                field = if (value == null) {
+                    -1
+                } else {
+                    value
+                }
+            }
 
         /**
-         * Contact Number To be blocked, Ex : INDIA - +91XXXXXXXX
+         * Contact Country Code To be blocked, Ex : INDIA - +91
+         */
+        var countryCode: String = ""
+            get() {
+                return field.trim()
+            }
+            set(value) {
+                field = if (value == null) {
+                    ""
+                } else {
+                    value.trim()
+                }
+            }
+
+        /**
+         * Contact Number To be blocked, Ex : INDIA - XXXXXXXXXX
          */
         var number: String = ""
             get() {

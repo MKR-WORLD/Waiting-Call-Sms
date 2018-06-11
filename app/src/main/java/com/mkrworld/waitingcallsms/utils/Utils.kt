@@ -6,8 +6,11 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.View
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import com.mkrworld.androidlib.utils.MKRDialogUtil
 import com.mkrworld.waitingcallsms.BuildConfig
 import com.mkrworld.waitingcallsms.R
@@ -15,6 +18,21 @@ import com.mkrworld.waitingcallsms.R
 class Utils {
     companion object {
         private val TAG: String = BuildConfig.BASE_TAG + ".Utils"
+
+        /**
+         * Method to get the detail of the Phone number
+         */
+        fun getPhoneNumberDetail(context: Context, phoneNumber: String): Phonenumber.PhoneNumber? {
+            try {
+                val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
+                val curLocale: String = (context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).networkCountryIso.toUpperCase()
+                val parse: Phonenumber.PhoneNumber = phoneNumberUtil.parse(phoneNumber, curLocale)
+                return parse
+            } catch (e: Exception) {
+                Tracer.error(TAG, "getPhoneNumberDetail: " + e.message)
+                return null
+            }
+        }
 
         /**
          * Method to show the Loading Dialog

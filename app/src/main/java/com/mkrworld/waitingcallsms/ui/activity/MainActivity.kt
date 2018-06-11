@@ -1,7 +1,6 @@
 package com.mkrworld.waitingcallsms.ui.activity
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -11,21 +10,18 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
-import android.telephony.TelephonyManager
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber
 import com.mkrworld.androidlib.controller.AppPermissionController
 import com.mkrworld.waitingcallsms.BuildConfig
 import com.mkrworld.waitingcallsms.R
-import com.mkrworld.waitingcallsms.db.DataBase
 import com.mkrworld.waitingcallsms.service.CallListenerService
 import com.mkrworld.waitingcallsms.utils.Tracer
+import com.mkrworld.waitingcallsms.utils.Utils
 
 
 class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissionControllerListener {
 
     companion object {
-        private const val TAG : String =  BuildConfig.BASE_TAG + ".MainActivity"
+        private const val TAG: String = BuildConfig.BASE_TAG + ".MainActivity"
     }
 
     private var appPermissionController: AppPermissionController? = null
@@ -96,18 +92,13 @@ class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissio
                 val contactId: String = cursorId?.getString(cursorId?.getColumnIndex(ContactsContract.Contacts._ID)) ?: ""
                 val idResult: String = cursorId?.getString(cursorId?.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) ?: ""
                 if (Integer.valueOf(idResult) == 1) {
-                    val dataBase: DataBase = DataBase.getInstance(applicationContext)
                     val cursorNumber: Cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null)
                     if (cursorNumber == null || cursorNumber.count == 0) {
                         return
                     }
-                    val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
-                    val curLocale: String = (getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).networkCountryIso.toUpperCase()
                     while (cursorNumber?.moveToNext()) {
                         var phoneNumber: String = cursorNumber?.getString(cursorNumber.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)) ?: ""
-                        val parse: Phonenumber.PhoneNumber = phoneNumberUtil.parse(phoneNumber, curLocale)
-                        Tracer.debug(TAG, "NATONAL  Ph: ${parse.nationalNumber}")
-                        Tracer.debug(TAG, "C.C      Ph: ${parse.countryCode}")
+                        Utils.getPhoneNumberDetail(this, phoneNumber)
                     }
                 }
             }
