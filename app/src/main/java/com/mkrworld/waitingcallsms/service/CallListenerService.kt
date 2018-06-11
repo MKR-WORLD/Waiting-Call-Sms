@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.telephony.PhoneStateListener
-import com.mkrworld.waitingcallsms.BuildConfig
-import com.mkrworld.waitingcallsms.utils.Tracer
 import android.telephony.TelephonyManager
+import com.mkrworld.waitingcallsms.BuildConfig
+import com.mkrworld.waitingcallsms.db.DataBase
 import com.mkrworld.waitingcallsms.ui.custom.WindowView
+import com.mkrworld.waitingcallsms.utils.Tracer
+import com.mkrworld.waitingcallsms.utils.Utils
+import java.lang.reflect.Method
 
 class CallListenerService : Service() {
 
@@ -46,13 +49,29 @@ class CallListenerService : Service() {
     /**
      * Class to handle the Phone State Event when An Call is Received
      */
-    class ListenPhoneState : PhoneStateListener() {
+    inner class ListenPhoneState : PhoneStateListener() {
 
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
             Tracer.error(TAG, "onCallStateChanged: IDLE = 0, RINGING = 1, OFFHOOK = 2    STATE = $state      NUMBER = $incomingNumber")
             when (state) {
                 TelephonyManager.CALL_STATE_RINGING -> {
-                    // CANCEL CALL AND SEND SMS
+                    try {
+                        val phoneNumberDetail = Utils.getPhoneNumberDetail(applicationContext, incomingNumber)
+                        if (phoneNumberDetail != null && DataBase.getInstance(applicationContext).isContainNumber("" + phoneNumberDetail.countryCode, "" + phoneNumberDetail.nationalNumber)) {
+                            val clazz = Class.forName(telephonyManager!!::class.qualifiedName)
+                            val method: Method = clazz.getDeclaredMethod("getITelephony")
+                            method.setAccessible(true)
+                            val telephonyService: Any = method.invoke(telephonyManager)
+                            val telephonyInterfaceClass = Class.forName(telephonyService::class.qualifiedName)
+                            val methodEndCall: Method = telephonyInterfaceClass.getDeclaredMethod("endCall")
+                            methodEndCall.invoke(telephonyInterfaceClass)
+                            Tracer.error(TAG, "onCallStateChanged: END CALL:   NUMBER = $incomingNumber")
+                            // CANCEL CALL AND SEND SMS
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Tracer.error(TAG, "onCallStateChanged: " + e.message)
+                    }
                 }
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
 
@@ -62,5 +81,6 @@ class CallListenerService : Service() {
                 }
             }
         }
+
     }
 }
