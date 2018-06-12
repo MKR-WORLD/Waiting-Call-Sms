@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), AppPermissionController.OnAppPermissio
                         val contactInfo = TableContactInfo.ContactInfo()
                         contactInfo.countryCode = "" + phoneNumberDetail?.countryCode
                         contactInfo.number = "" + phoneNumberDetail?.nationalNumber
-                        contactInfo.name = "ROMESH"
+                        contactInfo.name = contactName
                         DataBase.getInstance(applicationContext).saveContactInfo(contactInfo)
                     }
                 }

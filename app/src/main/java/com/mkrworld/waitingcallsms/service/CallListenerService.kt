@@ -3,6 +3,7 @@ package com.mkrworld.waitingcallsms.service
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
@@ -58,19 +59,35 @@ class CallListenerService : Service() {
                     try {
                         val phoneNumberDetail = Utils.getPhoneNumberDetail(applicationContext, incomingNumber)
                         if (phoneNumberDetail != null && DataBase.getInstance(applicationContext).isContainNumber("" + phoneNumberDetail.countryCode, "" + phoneNumberDetail.nationalNumber)) {
-                            val clazz = Class.forName(telephonyManager!!::class.qualifiedName)
-                            val method: Method = clazz.getDeclaredMethod("getITelephony")
-                            method.setAccessible(true)
-                            val telephonyService: Any = method.invoke(telephonyManager)
-                            val telephonyInterfaceClass = Class.forName(telephonyService::class.qualifiedName)
-                            val methodEndCall: Method = telephonyInterfaceClass.getDeclaredMethod("endCall")
-                            methodEndCall.invoke(telephonyInterfaceClass)
-                            Tracer.error(TAG, "onCallStateChanged: END CALL:   NUMBER = $incomingNumber")
-                            // CANCEL CALL AND SEND SMS
+                            val serviceManagerName = "android.os.ServiceManager"
+                            val serviceManagerNativeName = "android.os.ServiceManagerNative"
+                            val telephonyName = "com.android.internal.telephony.ITelephony"
+                            val telephonyClass: Class<*>
+                            val telephonyStubClass: Class<*>
+                            val serviceManagerClass: Class<*>
+                            val serviceManagerNativeClass: Class<*>
+                            val telephonyEndCall: Method
+                            val telephonyObject: Any
+                            val serviceManagerObject: Any
+                            telephonyClass = Class.forName(telephonyName)
+                            telephonyStubClass = telephonyClass.classes[0]
+                            serviceManagerClass = Class.forName(serviceManagerName)
+                            serviceManagerNativeClass = Class.forName(serviceManagerNativeName)
+                            val getService = serviceManagerClass.getMethod("getService", String::class.java)
+                            val tempInterfaceMethod = serviceManagerNativeClass.getMethod("asInterface", IBinder::class.java)
+                            val tmpBinder = Binder()
+                            tmpBinder.attachInterface(null, "fake")
+                            serviceManagerObject = tempInterfaceMethod.invoke(null, tmpBinder)
+                            val retbinder = getService.invoke(serviceManagerObject, "phone") as IBinder
+                            val serviceMethod = telephonyStubClass.getMethod("asInterface", IBinder::class.java)
+                            telephonyObject = serviceMethod.invoke(null, retbinder)
+                            telephonyEndCall = telephonyClass.getMethod("endCall")
+                            telephonyEndCall.invoke(telephonyObject)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Tracer.error(TAG, "onCallStateChanged: " + e.message)
+
                     }
                 }
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
@@ -81,6 +98,5 @@ class CallListenerService : Service() {
                 }
             }
         }
-
     }
 }
