@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
+    <color name="toolbar_back">@color/colorPrimary</color>
+    <color name="toolbar_text_color">#FFFFFF</color>
+    <color name="tab_back">@color/colorPrimary</color>
+    <color name="tab_text_color">#FFFFFF</color>
+    <color name="tab_text_color_focus">#FFFFFF</color>
+    <color name="tab_strip">#FFFFFF</color>
 </resources>
